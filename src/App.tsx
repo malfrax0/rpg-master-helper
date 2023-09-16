@@ -1,14 +1,14 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import GeneratedInput from './Components/Forms/NumberRenderer';
+import React, { useState } from 'react';
+import { Container } from '@mui/material';
 import CthulhuRPGInfo from './Data/Temp/CthulhuRPGInfo';
+import ComponentRenderer from './Components/Forms/ComponentRenderer';
+import PlayerContainer from './Components/PlayerInfo/PlayerContainer';
 
 function App() {
   return (
-    <div>
-      <GeneratedInput object={CthulhuRPGInfo.data[0].components[0]} />
-    </div>
+    <Container>
+      <PlayerContainer info={CthulhuRPGInfo} />
+    </Container>
   );
 }
 

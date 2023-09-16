@@ -4,15 +4,15 @@ export namespace FormObjectParameters {
     export enum Type {
         Number = 0,
         Image = 1,
-        Text,
-        LargeText,
-        Checkbox,
-        Switch,
-        Slider,
-        Container,
-        Object,
-        ListBasedObject,
-        NullObject,
+        Text = 2,
+        LargeText = 3,
+        Checkbox = 4,
+        Switch = 5,
+        Slider = 6,
+        Container = 7,
+        Object = 8,
+        ListBasedObject = 9,
+        NullObject = 10,
     };
 
     export enum Alignment {
@@ -28,9 +28,12 @@ export namespace FormObjectParameters {
         longDescription?: string,
         required: boolean,
         modifyInGame: boolean,
+        calculated?: boolean,
+        inGameOnly?: boolean,
         default?: any,
         pinned?: boolean,
         definedByList?:boolean,
+        type: Type
     }
 
     export interface Number extends Base {
@@ -44,7 +47,8 @@ export namespace FormObjectParameters {
     }
 
     export interface LargeText extends Base {
-        length?: number
+        length?: number,
+        row?: number
     }
 
     export interface Checkbox extends Base {
@@ -67,14 +71,10 @@ export namespace FormObjectParameters {
         spacing?: number,
         column?: number
     }
-
-    export interface Object extends Base {
-        container: Container,
-        components: Base[]
-    }
     
     export interface ListBasedObject extends Base {
-        object: Object | string,
+        object: Category | string,
+        container: Container,
         showAll: boolean,
         canHaveDouble: boolean,
         list: any[]
@@ -85,6 +85,7 @@ export namespace FormObjectParameters {
         key: string,
         container: Container,
         components: Base[],
+        row?: number,
     }
 
     export interface ValueExpression {
@@ -92,20 +93,29 @@ export namespace FormObjectParameters {
         dynamic: boolean
     }
 
-    export const GetType = (data: Base): Type => {
-        if ("step" in data) return Type.Slider;
-        if ("min" in data) return Type.Number;
-        if ("validation" in data) return Type.Text;
-        if ("length" in data) return Type.LargeText;
-        if ("align" in data) return Type.Container;
-        if ("disabled" in data) return Type.Checkbox;
-        if ("labels" in data) return Type.Switch;
-        if ("components" in data) return Type.Object;
-        if ("list" in data) return Type.ListBasedObject;
-        return Type.NullObject;
+    export const GetType = (data: any): Type => {
+        return data.type ?? Type.NullObject;
+    }
+
+    export const GetGridSizeFromContainer = (container: Container, length?: number) => {
+        switch (container.align)
+        {
+            case Alignment.Vertical:
+                return 1;
+            case Alignment.Horizontal:
+                return 12 / (Math.max(1, length ?? 1));
+            default:
+                return container.column ?? 1;
+        }
+    }
+
+    export const ComputeExpression = <T>(valueExpression: ValueExpression, playerInfo: any, objectInfo?: any) => {
+        console.log(playerInfo, objectInfo);
+        return Function("Math", "player", "object", `"use strict";return (${valueExpression.expression})`)(Math, playerInfo, objectInfo) as T;
     }
 
     export type ComponentObjectType = Slider | Number | Text | LargeText | Container | Checkbox | Switch | ListBasedObject | Object; 
+
 }
 
 export default interface RPGInfo {
@@ -114,6 +124,6 @@ export default interface RPGInfo {
     shortDescription: string,
     longDescription: string,
 
-    type?: FormObjectParameters.Object[],
+    type?: FormObjectParameters.Category[],
     data: FormObjectParameters.Category[],
 };

@@ -15,25 +15,30 @@ const CthulhuRPGInfo: RPGInfo = {
             },
             components: [
                 <FormObjectParameters.Switch>{
+                    type: FormObjectParameters.Type.Switch,
                     default: false,
                     name: "Peut level up",
                     key: "level-up",
                     modifyInGame: true,
+                    inGameOnly: true,
                     required: true,
                     shortDescription: "Level up"
                 },
                 <FormObjectParameters.Text>{
+                    type: FormObjectParameters.Type.Text,
                     definedByList: true,
                     name: "Nom",
                     key: "name",
                     modifyInGame: false,
                     required: true,
+                    locked: true,
                     shortDescription: "Nom",
                     default: {
                         expression: `object['name'] + (object['specification'] != undefined ? (' ' + object['specification']) : '')`
                     }
                 },
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Number,
                     definedByList: true,
                     name: "Defaut value",
                     key: "defaut",
@@ -41,9 +46,11 @@ const CthulhuRPGInfo: RPGInfo = {
                     max: 100,
                     modifyInGame: false,
                     required: true,
+                    locked: true,
                     shortDescription: "Defaut"
                 },
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Number,
                     default: {
                         expression: `object['defaut']`,
                         dynamic: false
@@ -54,22 +61,20 @@ const CthulhuRPGInfo: RPGInfo = {
                     required: true,
                     shortDescription: "Valeur de la compétence"
                 },
-            ],
-            required: false,
-            modifyInGame: true,
-            shortDescription: "Une compétence",
-            default: {}
+            ]
         }
     ],
     data: [
         {
             name: "Etat civil",
             key: "etat-civil",
+            row: 4,
             container: {
                 align: FormObjectParameters.Alignment.Vertical
             },
             components: [
                 <FormObjectParameters.Text>{
+                    type: FormObjectParameters.Type.Text,
                     name: "Nom",
                     key: "nom",
                     shortDescription: "Nom du personnage",
@@ -78,6 +83,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     default: "HP. Lovecraft"
                 },
                 <FormObjectParameters.Text>{
+                    type: FormObjectParameters.Type.Text,
                     name: "Joueur",
                     key: "joueur",
                     shortDescription: "Nom du joueur",
@@ -86,6 +92,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     default: ""
                 },
                 <FormObjectParameters.Text>{
+                    type: FormObjectParameters.Type.Text,
                     name: "Occupation",
                     key: "occupation",
                     shortDescription: "Metier du personnage",
@@ -94,6 +101,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     default: "Ecrivant"
                 },
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Text,
                     name: "Age",
                     key: "age",
                     shortDescription: "Age du personnage",
@@ -104,6 +112,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     max: 120
                 },
                 <FormObjectParameters.Text>{
+                    type: FormObjectParameters.Type.Text,
                     name: "Sexe",
                     key: "sexe",
                     shortDescription: "Sexe du personnage",
@@ -112,6 +121,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     default: ""
                 },
                 <FormObjectParameters.Text>{
+                    type: FormObjectParameters.Type.Text,
                     name: "Résidence",
                     key: "residence",
                     shortDescription: "Résidence principal du personnage",
@@ -120,6 +130,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     default: ""
                 },
                 <FormObjectParameters.Text>{
+                    type: FormObjectParameters.Type.Text,
                     name: "Lieu de naissance",
                     key: "lieu-naissance",
                     shortDescription: "Lieu de naissance du personnage",
@@ -132,12 +143,14 @@ const CthulhuRPGInfo: RPGInfo = {
         {
             name: "Caractéristiques",
             key: "caracteristiques",
+            row: 4,
             container: {
                 align: FormObjectParameters.Alignment.Grid,
                 column: 2
             },
             components: [
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Number,
                     name: "Force",
                     key: "for",
                     shortDescription: "Représente la force du personnage.",
@@ -147,6 +160,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     max: 100
                 },
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Number,
                     name: "Dextérité",
                     key: "dex",
                     shortDescription: "Représente la capacité du personnage à courir, grimper ou esquiver.",
@@ -156,6 +170,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     max: 100
                 },
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Number,
                     name: "Pouvoir",
                     key: "pou",
                     shortDescription: "Représente la force mental du personnage.",
@@ -165,6 +180,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     max: 100
                 },
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Number,
                     name: "Constitution",
                     key: "con",
                     shortDescription: "Représente la résistance physique du personnage.",
@@ -174,6 +190,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     max: 100
                 },
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Number,
                     name: "Apparence",
                     key: "app",
                     shortDescription: "Représente la beauté et le charisme du personnage.",
@@ -183,6 +200,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     max: 100
                 },
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Number,
                     name: "Education",
                     key: "edu",
                     shortDescription: "Représente l'éducation que le personnage à reçu.",
@@ -192,6 +210,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     max: 100
                 },
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Number,
                     name: "Taille",
                     key: "tai",
                     shortDescription: "Représente la taille et le poids du personnage.",
@@ -201,6 +220,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     max: 100
                 },
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Number,
                     name: "Intelligeance",
                     key: "int",
                     shortDescription: "Représente l'intélligence du personnage.",
@@ -210,6 +230,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     max: 100
                 },
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Number,
                     name: "Mouvement",
                     key: "mvt",
                     shortDescription: "Représente le déplacement du personnage.",
@@ -219,6 +240,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     max: 20
                 },
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Number,
                     name: "Chance",
                     key: "chance",
                     shortDescription: "Représente la chance du personnage.",
@@ -237,6 +259,7 @@ const CthulhuRPGInfo: RPGInfo = {
             },
             components: [
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Number,
                     name: "PV max",
                     key: "pv-max",
                     shortDescription: "Points de vie maximum",
@@ -250,6 +273,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     }
                 },
                 <FormObjectParameters.Slider>{
+                    type: FormObjectParameters.Type.Slider,
                     name: "PV",
                     key: "pv",
                     shortDescription: "Points de vie",
@@ -258,17 +282,20 @@ const CthulhuRPGInfo: RPGInfo = {
                     min: 0,
                     max: 20,
                     step: 1,
+                    inGameOnly: true,
                     default: {
                         expression: `player['pv-max']`,
                         dynamic: false
                     }
                 },
                 <FormObjectParameters.Text>{
+                    type: FormObjectParameters.Type.Text,
                     name: "Blessure grave",
                     key: "blessure-grave",
                     shortDescription: "Blessure grave que le joueur a durant la partie.",
                     required: false,
                     modifyInGame: true,
+                    inGameOnly: true,
                     default: ""
                 },
             ]
@@ -281,6 +308,7 @@ const CthulhuRPGInfo: RPGInfo = {
             },
             components: [
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Number,
                     name: "PM max",
                     key: "pm-max",
                     shortDescription: "Points de magie maximum",
@@ -294,6 +322,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     }
                 },
                 <FormObjectParameters.Slider>{
+                    type: FormObjectParameters.Type.Slider,
                     name: "PM",
                     key: "pm",
                     shortDescription: "Points de magie",
@@ -302,6 +331,7 @@ const CthulhuRPGInfo: RPGInfo = {
                     min: 0,
                     max: 24,
                     step: 1,
+                    inGameOnly: true,
                     default: {
                         expression: `player['pm-max']`,
                         dynamic: false
@@ -317,6 +347,7 @@ const CthulhuRPGInfo: RPGInfo = {
             },
             components: [
                 <FormObjectParameters.Number>{
+                    type: FormObjectParameters.Type.Number,
                     name: "Santé Mental initial",
                     key: "sm-max",
                     shortDescription: "Santé mental initial",
@@ -330,11 +361,13 @@ const CthulhuRPGInfo: RPGInfo = {
                     }
                 },
                 <FormObjectParameters.Slider>{
+                    type: FormObjectParameters.Type.Slider,
                     name: "Santé Mental",
                     key: "sm",
                     shortDescription: "Santé mental",
                     required: true,
                     modifyInGame: true,
+                    inGameOnly: true,
                     min: 0,
                     max: 100,
                     step: 1,
@@ -344,19 +377,23 @@ const CthulhuRPGInfo: RPGInfo = {
                     }
                 },
                 <FormObjectParameters.Text>{
+                    type: FormObjectParameters.Type.Text,
                     name: "Folie temporaire",
                     key: "folie-temporaire",
                     shortDescription: "Folie temporaire",
                     required: false,
                     modifyInGame: true,
+                    inGameOnly: true,
                     default: ""
                 },
                 <FormObjectParameters.Text>{
+                    type: FormObjectParameters.Type.Text,
                     name: "Folie persistante",
                     key: "folie-persistante",
                     shortDescription: "Folie persistante.",
                     required: false,
                     modifyInGame: true,
+                    inGameOnly: true,
                     default: ""
                 },
             ]
@@ -365,11 +402,12 @@ const CthulhuRPGInfo: RPGInfo = {
             name: "Compétences",
             key: "competence",
             container: {
-                align: FormObjectParameters.Alignment.Grid,
+                align: FormObjectParameters.Alignment.Vertical,
                 column: 3
             },
             components: [
                 <FormObjectParameters.ListBasedObject>{
+                    type: FormObjectParameters.Type.ListBasedObject,
                     name: "Compétences",
                     key: "competence-list",
                     required: true,
@@ -377,7 +415,11 @@ const CthulhuRPGInfo: RPGInfo = {
                     showAll: true,
                     canHaveDouble: true,
                     object: "competence-type",
-                    list: CthulhuRPGInfoCompetence
+                    list: CthulhuRPGInfoCompetence,
+                    container: {
+                        align: FormObjectParameters.Alignment.Grid,
+                        column: 4
+                    }
                 },
             ]
         }

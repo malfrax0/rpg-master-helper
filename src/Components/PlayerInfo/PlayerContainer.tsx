@@ -20,7 +20,7 @@ const PlayerContainer = (props: PlayerContainerProps) => {
     }
 
     return (
-        <PlayerContext.Provider value={{editMode, inGame: false, rpgInfo: props.info, player: value}}>
+        <PlayerContext.Provider value={{editMode, inGame: true, rpgInfo: props.info, player: value}}>
             <Grid container spacing={2}>
                 {
                     props.info.data.map((value: FOP.Category) => {

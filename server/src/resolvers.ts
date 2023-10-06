@@ -8,6 +8,9 @@ import CharacterSheetTemplateResolver from "./resolvers/CharacterSheetTemplateRe
 
 const defaultResolver: Resolvers = {
     Query: {
+        async auth(_, args, context) {
+            return context.user !== null;
+        }
     },
     Mutation: {
         async login(_, args, context, info) {

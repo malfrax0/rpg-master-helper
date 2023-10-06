@@ -110,7 +110,6 @@ export namespace FormObjectParameters {
     }
 
     export const ComputeExpression = <T>(valueExpression: ValueExpression, playerInfo: any, objectInfo?: any) => {
-        console.log(playerInfo, objectInfo);
         return Function("Math", "player", "object", `"use strict";return (${valueExpression.expression})`)(Math, playerInfo, objectInfo) as T;
     }
 

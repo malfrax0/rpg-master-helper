@@ -6,13 +6,22 @@ import { typeDefs } from "./typeDefs";
 import { PrismaClient } from "@prisma/client";
 import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken"
+import { IncomingHttpHeaders } from "http";
 
-const getUserFromToken = (token: string) => {
+const getUserFromRequest = (headers: IncomingHttpHeaders) => {
+  if (!headers || !headers.authorization) return {error: "No authentification sent to the server.", user: null}; 
+
+  const auth = headers.authorization.split(" ");
+  const bearer = auth[0];
+  const token = auth[1];
+  
+  if (bearer !== "Bearer") return {error: "Authentification need to use Bearer.", user: null};
+  
   try {
-    return jwt.verify(token, process.env.JWTSECRET);
+    return {error: null, user: jwt.verify(token, process.env.JWTSECRET)};
   }
   catch {
-    return null;
+    return {error: "Token is invalid.", user: null};
   }
 }
 
@@ -22,27 +31,14 @@ const runServer = () => {
     resolvers,
     typeDefs,
     context: ({req}) => {
-      if (req.body.query.match("login") || req.body.query.match("register")) {
-        return {prisma, req}
-      }
+      const {error, user} = getUserFromRequest(req.headers);
 
-      let user = null;
-      if (req.headers && req.headers.authorization) {
-        const auth = req.headers.authorization.split(" ");
-        const bearer = auth[0];
-        const token = auth[1];
-        if (bearer === "Bearer") {
-          user = getUserFromToken(token);
-          if (!user) {
-            throw new GraphQLError("Token is invalid.");
-          }
-        }
-        else {
-          throw new GraphQLError("Authentification need to use Bearer.");
-        }
+      if (req.body.query.match("login") || req.body.query.match("register") || req.body.query.match("auth")) {
+        return {prisma, req, user}
       }
-      else {
-        throw new GraphQLError("User need to be identified");
+      
+      if (error !== null) {
+        throw new GraphQLError(error);
       }
 
       return {

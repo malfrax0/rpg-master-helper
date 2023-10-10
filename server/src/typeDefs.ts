@@ -2,12 +2,14 @@ import {gql} from "apollo-server";
 
 export const typeDefs = gql`
     scalar JSON
+    scalar timestamptz
 
     type User {
         id: String!
         name: String!
         email: String!
         administratedGames: [Game!]
+        games: [CharacterSheet!]
     }
 
     type Game {
@@ -24,6 +26,40 @@ export const typeDefs = gql`
         name: String!
         description: String,
         templateId: ID!
+    }
+
+    type GameHistory {
+        id: String!
+        user: User
+        userId: String
+        game: Game
+        gameId: String
+        title: String!
+        content: String!
+    }
+
+    type GameEvent {
+        id: String!
+        title: String!
+        content: String!
+        game: Game
+        gameId: String!
+        startAt: timestamptz
+        duration: Int
+        participations: [GameEventParticipation!]
+    }
+
+    enum GameEventResponse {
+        PARTICIPATE
+        MAYBE
+        CANNOT
+    }
+
+    type GameEventParticipation {
+        id: String!
+        user: User!
+        userId: String!
+        response: String!
     }
 
     type CharacterSheet {
@@ -56,16 +92,37 @@ export const typeDefs = gql`
         user: User
     }
 
+    input Pagination {
+        first: Int,
+        after: Int
+    }
+
+    input UserFilter {
+        name: String,
+        ignoreInGames: [String],
+        onlyInGames: [String]
+    }
+
     type Query {
         auth: Boolean!
 
-        getGame(gameId: String!): Game!
-        getMyGames: [Game!]
+        game(gameId: String!): Game!
+        myGames: [Game!]
 
-        getCharacterSheet(characterSheetId: String!): CharacterSheet!
+        characterSheet(characterSheetId: String!): CharacterSheet!
 
-        getCharacterSheetTemplate(characterSheetTemplateId: String!): CharacterSheetTemplate!
-        getAllCharacterSheetTemplate: [CharacterSheetTemplate!]
+        characterSheetTemplate(characterSheetTemplateId: String!): CharacterSheetTemplate!
+        characterSheetTemplates: [CharacterSheetTemplate!]
+
+        me: User!
+        user(userId: String!): User!
+        users(page: Pagination!, filter: UserFilter): [User!]
+
+        event(eventId: String!): GameEvent!
+        events(page: Pagination!, gameId: String!): [GameEvent!]
+
+        history(historyId: String!): GameHistory!
+        histories(page: Pagination!, gameId: String!): [GameHistory!]
     }
 
     type Mutation {
@@ -75,6 +132,8 @@ export const typeDefs = gql`
         createGame(game: GameInput!): Game!
 
         inviteUserToGame(gameId: String!, userId: String!): CharacterSheet!
+        removeUserFromGame(gameId: String!, userId: String!): Boolean!
+
         updateValueOfCharacterSheet(characterSheetId: String!, key: String!, value: String!): CharacterStat!
 
         createCharacterSheetTemplate(name: String!, description: String!, json: JSON!): CharacterSheetTemplate!

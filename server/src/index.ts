@@ -28,6 +28,7 @@ const getUserFromRequest = (headers: IncomingHttpHeaders) => {
 const runServer = () => {
   const prisma = new PrismaClient();
   const server = new ApolloServer({
+    introspection: true,
     resolvers,
     typeDefs,
     context: ({req}) => {

@@ -5,7 +5,7 @@ import { getStatDefinitionFromKey } from "../services/CharacterStatService";
 
 const CharacterSheetResolver: Resolvers = {
     Query: {
-        async getCharacterSheet(_, args, context) {
+        async characterSheet(_, args, context) {
             const characterSheet = await context.prisma.characterSheet.findUnique({where: {id: args.characterSheetId}, include: {characterStats: {}, game: {}, user: {}}})
             if (!characterSheet) throw new GraphQLError(`Unable to find character sheet with id ${args.characterSheetId}`);
             if (context.user.id !== characterSheet.game.adminId && context.user.id !== characterSheet.userId) throw new GraphQLError(`You are not allowed to access this character sheet.`);
@@ -30,6 +30,12 @@ const CharacterSheetResolver: Resolvers = {
             });
 
             return characterSheet;
+        },
+        async removeUserFromGame(_, args, context) {
+            const characterSheet = await context.prisma.characterSheet.findUnique({ where: { gameId_userId: {userId: args.userId, gameId: args.gameId} } });
+            await context.prisma.characterSheet.delete({ where: {id: characterSheet.id} });
+
+            return true;
         },
         async updateValueOfCharacterSheet(_, args, context) {
             const characterSheet = await context.prisma.characterSheet.findUnique({ where: {id: args.characterSheetId} });

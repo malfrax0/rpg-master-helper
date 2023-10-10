@@ -3,13 +3,27 @@ import { Resolvers } from "../generated/graphql"
 
 const GameResolver: Resolvers = {
     Query: {
-        async getGame(_, args, context) {
-            const game = await context.prisma.game.findUniqueOrThrow({where: {id: args.gameId}})
+        async game(_, args, context) {
+            const game = await context.prisma.game.findUniqueOrThrow({where: {id: args.gameId},
+                include: {
+                    admin: {
+                    },
+                    rpgInfo: {
+
+                    },
+                    characters: {
+                        include: {
+                            user: {
+                                
+                            }
+                        }
+                    }
+                }})
         
             if (game) return game;
             throw new GraphQLError(`Unable to find game with id ${args.gameId}.`);
         },
-        async getMyGames(_, args, context) {
+        async myGames(_, args, context) {
             const allGames = await context.prisma.game.findMany({
                 where: {
                     OR: [
@@ -28,11 +42,80 @@ const GameResolver: Resolvers = {
 
                     },
                     characters: {
+                        include: {
+                            user: {
+
+                            }
+                        }
                     }
                 }
             });
 
             return allGames;
+        },
+        async event(_, args, context) {
+            const eventData = await context.prisma.gameEvent.findUnique({
+                where: {
+                    id: args.eventId
+                },
+                include: {
+                    participations: {
+                        include: {
+                            user: {
+
+                            }
+                        }
+                    }
+                }
+            });
+            return eventData;
+        },
+        async events(_, args, context) {
+            const eventData = await context.prisma.gameEvent.findMany({
+                where: {
+                    gameId: args.gameId
+                },
+                include: {
+                    participations: {
+                        include: {
+                            user: {
+
+                            }
+                        }
+                    }
+                },
+                skip: args.page.after || 0,
+                take: args.page.first || 10
+            });
+            return eventData;
+        },
+        async history(_, args, context) {
+            const historyData = await context.prisma.gameHistory.findUnique({
+                where: {
+                    id: args.historyId
+                },
+                include: {
+                    user: {
+                        
+                    }
+                }
+            });
+            return historyData;
+        },
+        async histories(_, args, context) {
+            const historyData = await context.prisma.gameHistory.findMany({
+                where: {
+                    gameId: args.gameId
+                },
+                include: {
+                    user: {
+
+                    }
+                },
+                skip: args.page.after || 0,
+                take: args.page.first || 10
+            });
+            return historyData;
         }
     },
     Mutation: {

@@ -15,6 +15,7 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   JSON: { input: any; output: any; }
+  timestamptz: { input: any; output: any; }
 };
 
 export type AuthResponse = {
@@ -62,6 +63,43 @@ export type Game = {
   rpgInfo?: Maybe<CharacterSheetTemplate>;
 };
 
+export type GameEvent = {
+  __typename?: 'GameEvent';
+  content: Scalars['String']['output'];
+  duration?: Maybe<Scalars['Int']['output']>;
+  game?: Maybe<Game>;
+  gameId: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  participations?: Maybe<Array<GameEventParticipation>>;
+  startAt?: Maybe<Scalars['timestamptz']['output']>;
+  title: Scalars['String']['output'];
+};
+
+export type GameEventParticipation = {
+  __typename?: 'GameEventParticipation';
+  id: Scalars['String']['output'];
+  response: Scalars['String']['output'];
+  user: User;
+  userId: Scalars['String']['output'];
+};
+
+export enum GameEventResponse {
+  Cannot = 'CANNOT',
+  Maybe = 'MAYBE',
+  Participate = 'PARTICIPATE'
+}
+
+export type GameHistory = {
+  __typename?: 'GameHistory';
+  content: Scalars['String']['output'];
+  game?: Maybe<Game>;
+  gameId?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  user?: Maybe<User>;
+  userId?: Maybe<Scalars['String']['output']>;
+};
+
 export type GameInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -75,6 +113,7 @@ export type Mutation = {
   inviteUserToGame: CharacterSheet;
   login: AuthResponse;
   register: AuthResponse;
+  removeUserFromGame: Scalars['Boolean']['output'];
   updateValueOfCharacterSheet: CharacterStat;
 };
 
@@ -110,51 +149,146 @@ export type MutationRegisterArgs = {
 };
 
 
+export type MutationRemoveUserFromGameArgs = {
+  gameId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+};
+
+
 export type MutationUpdateValueOfCharacterSheetArgs = {
   characterSheetId: Scalars['String']['input'];
   key: Scalars['String']['input'];
   value: Scalars['String']['input'];
 };
 
+export type Pagination = {
+  after?: InputMaybe<Scalars['Int']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   auth: Scalars['Boolean']['output'];
-  getAllCharacterSheetTemplate?: Maybe<Array<CharacterSheetTemplate>>;
-  getCharacterSheet: CharacterSheet;
-  getCharacterSheetTemplate: CharacterSheetTemplate;
-  getGame: Game;
-  getMyGames?: Maybe<Array<Game>>;
+  characterSheet: CharacterSheet;
+  characterSheetTemplate: CharacterSheetTemplate;
+  characterSheetTemplates?: Maybe<Array<CharacterSheetTemplate>>;
+  event: GameEvent;
+  events?: Maybe<Array<GameEvent>>;
+  game: Game;
+  histories?: Maybe<Array<GameHistory>>;
+  history: GameHistory;
+  me: User;
+  myGames?: Maybe<Array<Game>>;
+  user: User;
+  users?: Maybe<Array<User>>;
 };
 
 
-export type QueryGetCharacterSheetArgs = {
+export type QueryCharacterSheetArgs = {
   characterSheetId: Scalars['String']['input'];
 };
 
 
-export type QueryGetCharacterSheetTemplateArgs = {
+export type QueryCharacterSheetTemplateArgs = {
   characterSheetTemplateId: Scalars['String']['input'];
 };
 
 
-export type QueryGetGameArgs = {
+export type QueryEventArgs = {
+  eventId: Scalars['String']['input'];
+};
+
+
+export type QueryEventsArgs = {
   gameId: Scalars['String']['input'];
+  page: Pagination;
+};
+
+
+export type QueryGameArgs = {
+  gameId: Scalars['String']['input'];
+};
+
+
+export type QueryHistoriesArgs = {
+  gameId: Scalars['String']['input'];
+  page: Pagination;
+};
+
+
+export type QueryHistoryArgs = {
+  historyId: Scalars['String']['input'];
+};
+
+
+export type QueryUserArgs = {
+  userId: Scalars['String']['input'];
+};
+
+
+export type QueryUsersArgs = {
+  filter?: InputMaybe<UserFilter>;
+  page: Pagination;
 };
 
 export type User = {
   __typename?: 'User';
   administratedGames?: Maybe<Array<Game>>;
   email: Scalars['String']['output'];
+  games?: Maybe<Array<CharacterSheet>>;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
 };
 
-export type GetGameTestQueryVariables = Exact<{
+export type UserFilter = {
+  ignoreInGames?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  onlyInGames?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type AuthQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AuthQuery = { __typename?: 'Query', auth: boolean };
+
+export type GetGameQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetGameQuery = { __typename?: 'Query', game: { __typename?: 'Game', id: string, adminId?: string | null, description?: string | null, name: string, admin?: { __typename?: 'User', name: string } | null, characters?: Array<{ __typename?: 'CharacterSheet', id: string, user?: { __typename?: 'User', id: string, name: string } | null }> | null, rpgInfo?: { __typename?: 'CharacterSheetTemplate', name: string, description?: string | null, template: any } | null } };
+
+export type GetEventsQueryVariables = Exact<{
+  page: Pagination;
   gameId: Scalars['String']['input'];
 }>;
 
 
-export type GetGameTestQuery = { __typename?: 'Query', getGame: { __typename?: 'Game', name: string, description?: string | null, admin?: { __typename?: 'User', id: string, name: string } | null, characters?: Array<{ __typename?: 'CharacterSheet', user?: { __typename?: 'User', id: string, name: string } | null }> | null } };
+export type GetEventsQuery = { __typename?: 'Query', events?: Array<{ __typename?: 'GameEvent', id: string, title: string, content: string, startAt?: any | null, duration?: number | null, participations?: Array<{ __typename?: 'GameEventParticipation', response: string, user: { __typename?: 'User', id: string, name: string } }> | null }> | null };
+
+export type RemovePlayerFromGameMutationVariables = Exact<{
+  gameId: Scalars['String']['input'];
+  userId: Scalars['String']['input'];
+}>;
+
+
+export type RemovePlayerFromGameMutation = { __typename?: 'Mutation', removeUserFromGame: boolean };
+
+export type FindPlayerNotInGameQueryVariables = Exact<{
+  page: Pagination;
+  filter?: InputMaybe<UserFilter>;
+}>;
+
+
+export type FindPlayerNotInGameQuery = { __typename?: 'Query', users?: Array<{ __typename?: 'User', id: string, name: string }> | null };
+
+export type InvitePlayerMutationVariables = Exact<{
+  playerId: Scalars['String']['input'];
+  gameId: Scalars['String']['input'];
+}>;
+
+
+export type InvitePlayerMutation = { __typename?: 'Mutation', inviteUserToGame: { __typename?: 'CharacterSheet', id: string } };
 
 export type LoginMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -164,12 +298,41 @@ export type LoginMutationVariables = Exact<{
 
 export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthResponse', token?: string | null, user?: { __typename?: 'User', id: string } | null } };
 
-export type AuthQueryVariables = Exact<{ [key: string]: never; }>;
+export type RegisterMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+}>;
 
 
-export type AuthQuery = { __typename?: 'Query', auth: boolean };
+export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'AuthResponse', token?: string | null, user?: { __typename?: 'User', id: string } | null } };
+
+export type GetMyGamesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export const GetGameTestDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetGameTest"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getGame"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"admin"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"characters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetGameTestQuery, GetGameTestQueryVariables>;
-export const LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"token"}}]}}]}}]} as unknown as DocumentNode<LoginMutation, LoginMutationVariables>;
+export type GetMyGamesQuery = { __typename?: 'Query', myGames?: Array<{ __typename?: 'Game', id: string, name: string, description?: string | null, adminId?: string | null }> | null };
+
+export type GetAllCharacterSheetTemplateQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllCharacterSheetTemplateQuery = { __typename?: 'Query', characterSheetTemplates?: Array<{ __typename?: 'CharacterSheetTemplate', id: string, name: string }> | null };
+
+export type CreateGameMutationVariables = Exact<{
+  game: GameInput;
+}>;
+
+
+export type CreateGameMutation = { __typename?: 'Mutation', createGame: { __typename?: 'Game', id: string, name: string } };
+
+
 export const AuthDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Auth"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"auth"}}]}}]} as unknown as DocumentNode<AuthQuery, AuthQueryVariables>;
+export const GetGameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetGame"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"game"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"adminId"}},{"kind":"Field","name":{"kind":"Name","value":"admin"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"characters"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"rpgInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"template"}}]}}]}}]}}]} as unknown as DocumentNode<GetGameQuery, GetGameQueryVariables>;
+export const GetEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEvents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Pagination"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"events"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"startAt"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"participations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"response"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetEventsQuery, GetEventsQueryVariables>;
+export const RemovePlayerFromGameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemovePlayerFromGame"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeUserFromGame"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}]}]}}]} as unknown as DocumentNode<RemovePlayerFromGameMutation, RemovePlayerFromGameMutationVariables>;
+export const FindPlayerNotInGameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"FindPlayerNotInGame"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Pagination"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"UserFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"users"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<FindPlayerNotInGameQuery, FindPlayerNotInGameQueryVariables>;
+export const InvitePlayerDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"InvitePlayer"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inviteUserToGame"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"gameId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"gameId"}}},{"kind":"Argument","name":{"kind":"Name","value":"userId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"playerId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<InvitePlayerMutation, InvitePlayerMutationVariables>;
+export const LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"token"}}]}}]}}]} as unknown as DocumentNode<LoginMutation, LoginMutationVariables>;
+export const RegisterDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Register"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"password"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"register"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}},{"kind":"Argument","name":{"kind":"Name","value":"password"},"value":{"kind":"Variable","name":{"kind":"Name","value":"password"}}},{"kind":"Argument","name":{"kind":"Name","value":"name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"name"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"token"}}]}}]}}]} as unknown as DocumentNode<RegisterMutation, RegisterMutationVariables>;
+export const GetMyGamesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMyGames"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"myGames"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"adminId"}}]}}]}}]} as unknown as DocumentNode<GetMyGamesQuery, GetMyGamesQueryVariables>;
+export const GetAllCharacterSheetTemplateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAllCharacterSheetTemplate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"characterSheetTemplates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetAllCharacterSheetTemplateQuery, GetAllCharacterSheetTemplateQueryVariables>;
+export const CreateGameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateGame"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"game"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GameInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createGame"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"game"},"value":{"kind":"Variable","name":{"kind":"Name","value":"game"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<CreateGameMutation, CreateGameMutationVariables>;

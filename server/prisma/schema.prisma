@@ -17,6 +17,8 @@ model User {
   password String
   administratedGames Game[]
   games CharacterSheet[]
+  writtenHistory GameHistory[]
+  participations GameEventParticipation[]
 }
 
 model Game {
@@ -28,6 +30,44 @@ model Game {
   characters CharacterSheet[]
   rpgInfo CharacterSheetTemplate @relation(fields: [rpgInfoId], references: [id])
   rpgInfoId String @db.ObjectId
+  history GameHistory[]
+  event GameEvent[]
+}
+
+model GameHistory {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  user User @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+  game Game @relation(fields: [gameId], references: [id])
+  gameId String @db.ObjectId
+  title String
+  content String
+}
+
+model GameEvent {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  content String
+  game Game @relation(fields: [gameId], references: [id])
+  gameId String @db.ObjectId
+  startAt DateTime
+  duration Int
+  participations GameEventParticipation[]
+}
+
+enum GameEventResponse {
+  PARTICIPATE
+  MAYBE
+  CANNOT
+}
+
+model GameEventParticipation {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  event GameEvent @relation(fields: [eventId], references: [id])
+  eventId String @db.ObjectId
+  user User @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+  response GameEventResponse @default(MAYBE)
 }
 
 model CharacterSheet {
@@ -37,6 +77,8 @@ model CharacterSheet {
   user User @relation(fields: [userId], references: [id])
   userId String @db.ObjectId
   characterStats CharacterStat[]
+
+  @@unique([gameId, userId])
 }
 
 model CharacterStat {

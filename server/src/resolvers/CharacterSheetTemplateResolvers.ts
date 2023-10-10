@@ -3,13 +3,13 @@ import { Resolvers } from "../generated/graphql"
 
 const CharacterSheetTemplateResolver: Resolvers = {
     Query: {
-        async getCharacterSheetTemplate(_, args, context) {
+        async characterSheetTemplate(_, args, context) {
             const characterSheet = await context.prisma.characterSheetTemplate.findUnique({where: {id: args.characterSheetTemplateId}});
 
             if (characterSheet) return characterSheet;
             throw new GraphQLError(`Unable to find character sheet with id ${args.characterSheetTemplateId}`);
         },
-        async getAllCharacterSheetTemplate(_, args, context) {
+        async characterSheetTemplates(_, args, context) {
             return await context.prisma.characterSheetTemplate.findMany();
         }
     },

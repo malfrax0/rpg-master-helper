@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken"
 import GameResolver from "./resolvers/GameResolvers";
 import CharacterSheetResolver from "./resolvers/CharacterSheetResolver";
 import CharacterSheetTemplateResolver from "./resolvers/CharacterSheetTemplateResolvers";
+import UserResolver from "./resolvers/UserResolvers";
 
 const defaultResolver: Resolvers = {
     Query: {
@@ -59,12 +60,14 @@ export default {
         ...defaultResolver.Query,
         ...GameResolver.Query,
         ...CharacterSheetTemplateResolver.Query,
-        ...CharacterSheetResolver.Query
+        ...CharacterSheetResolver.Query,
+        ...UserResolver.Query
     },
     Mutation: {
         ...defaultResolver.Mutation,
         ...GameResolver.Mutation,
         ...CharacterSheetTemplateResolver.Mutation,
-        ...CharacterSheetResolver.Mutation
+        ...CharacterSheetResolver.Mutation,
+        ...UserResolver.Mutation
     }
 }

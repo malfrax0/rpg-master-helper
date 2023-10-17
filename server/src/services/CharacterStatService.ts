@@ -14,7 +14,6 @@ const getStatWithKeyInArray = (key: string, data: JsonArray): JsonValue|undefine
 
 export const getStatDefinitionFromKey = (key: string, characterSheet: JsonObject): JsonObject|undefined => {
     const searchIntoData = (currentKey: string, currentData: JsonArray): JsonObject|undefined => {
-        console.log(currentKey);
         if (currentKey.includes(".")) {
             let splittedKey = currentKey.split(".");
             const keyedData = getStatWithKeyInArray(splittedKey[0], currentData) as JsonObject;

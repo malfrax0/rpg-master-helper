@@ -28,6 +28,12 @@ export const typeDefs = gql`
         templateId: ID!
     }
 
+    input GameHistoryInput {
+        gameId: String!,
+        title: String!,
+        content: String!
+    }
+
     type GameHistory {
         id: String!
         user: User
@@ -38,12 +44,20 @@ export const typeDefs = gql`
         content: String!
     }
 
+    input GameEventInput {
+        gameId: String!
+        startAt: timestamptz!
+        duration: Int!
+        title: String!
+        content: String!
+    }
+
     type GameEvent {
         id: String!
         title: String!
         content: String!
         game: Game
-        gameId: String!
+        gameId: String
         startAt: timestamptz
         duration: Int
         participations: [GameEventParticipation!]
@@ -57,8 +71,8 @@ export const typeDefs = gql`
 
     type GameEventParticipation {
         id: String!
-        user: User!
-        userId: String!
+        user: User
+        userId: String
         response: String!
     }
 
@@ -137,5 +151,10 @@ export const typeDefs = gql`
         updateValueOfCharacterSheet(characterSheetId: String!, key: String!, value: String!): CharacterStat!
 
         createCharacterSheetTemplate(name: String!, description: String!, json: JSON!): CharacterSheetTemplate!
+
+        createEvent(event: GameEventInput!): GameEvent!
+        participateToEvent(gameEventId: String!, response: GameEventResponse!): GameEvent!
+
+        createHistory(history: GameHistoryInput!): GameHistory!
     }
 `

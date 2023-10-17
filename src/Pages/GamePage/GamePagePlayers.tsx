@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { gql } from "../../__generated__";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import GamePagePlayerItem from "./GamePagePlayerItem";
+import ModalStyleCard from "../../Components/Utils/ModalStyle";
 
 const FIND_PLAYER_NOT_IN_GAME = gql(`
     query FindPlayerNotInGame($page: Pagination!, $filter: UserFilter) {
@@ -82,7 +83,7 @@ export default function GamePagePlayers(props: GamePagePlayersProps) {
                             (props.characters && props.characters.length > 0) ?
                             props.characters.map((character) => {
                                 return (
-                                    <GamePagePlayerItem gameId={props.gameId} onDelete={(id: string)=>props.onInvite(id)} onShowCharacterSheet={()=>{}} key={character.id} character={character} />
+                                    <GamePagePlayerItem gameId={props.gameId} onDelete={(id: string)=>props.onInvite(id)} key={character.id} character={character} />
                                 )
                             }) : 
                             (<Typography>No players on your game.</Typography>)
@@ -99,7 +100,7 @@ export default function GamePagePlayers(props: GamePagePlayersProps) {
                 open={invite}
                 onClose={()=>setInvite(false)}
             >
-                <Card>
+                <Card sx={ModalStyleCard}>
                     <CardHeader title="Invite a player" />
                     <CardContent>
                         <FormControl fullWidth variant="outlined">

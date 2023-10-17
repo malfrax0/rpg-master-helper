@@ -1,10 +1,10 @@
-import { useState } from "react"
 import { gql } from "../../__generated__";
 import { useQuery } from "@apollo/client";
-import { Avatar, Button, Card, CardActions, CardContent, CardHeader, Divider, Grid, Icon, IconButton, List, ListItem, ListItemAvatar, ListItemText, Modal, Paper, Typography } from "@mui/material";
+import { Card, CardActions, CardHeader, Grid, IconButton, Paper, Typography } from "@mui/material";
 import PageLoader from "../../Components/Utils/PageLoader";
-import { Add, AddCircle, ArrowBack, ArrowCircleDown, Edit, More, PlayCircle, Share, ShareOutlined, ShareRounded } from "@mui/icons-material";
+import { Edit, PlayCircle } from "@mui/icons-material";
 import GamePagePlayers from "./GamePagePlayers";
+import GamePageEventFeed from "./GamePageEventFeed";
 
 const GET_GAME = gql(`
     query GetGame($id: String!) {
@@ -37,10 +37,10 @@ export type GamePageProps = {
 }
 
 export default function GamePage(props: GamePageProps) {
-    const {loading, data, error, refetch} = useQuery(GET_GAME, {variables: {id: props.id}});
+    const { loading, data, error, refetch } = useQuery(GET_GAME, { variables: { id: props.id } });
 
     if (loading) {
-        return (<PageLoader/>);
+        return (<PageLoader />);
     }
 
     return (
@@ -63,7 +63,7 @@ export default function GamePage(props: GamePageProps) {
             <Grid item xs={8}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        Event
+                        <GamePageEventFeed gameId={props.id} />
                     </Grid>
                     <Grid item xs={12}>
                         History
@@ -91,7 +91,6 @@ export default function GamePage(props: GamePageProps) {
                     </Grid>
                 </Grid>
             </Grid>
-            
         </Grid>
     )
 }

@@ -13,7 +13,12 @@ const NumberRenderer = (props: NumberRendererProps) => {
     const [errorMsg, setErrorMsg] = useState("");
     const [value, setValue] = useState("");
 
-    const { editMode } = useContext(PlayerContext);
+    const { editMode: editModeContext } = useContext(PlayerContext);
+
+    let editMode = editModeContext;
+    if (props.object.definedByList) {
+        editMode = false;
+    }
 
     useEffect(() => {
         setValue(props.value);

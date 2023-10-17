@@ -1,8 +1,10 @@
 import { ContactPage, Delete, MoreHoriz } from "@mui/icons-material";
 import { ListItem, IconButton, ListItemAvatar, Avatar, ListItemText, Menu, MenuList, MenuItem, ListItemIcon } from "@mui/material";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { gql } from "../../__generated__";
 import { useMutation } from "@apollo/client";
+import { TabsManagerContext } from "../TabsManager";
+import PlayerContainer from "../../Components/PlayerInfo/PlayerContainer";
 
 const REMOVE_PLAYER_FROM_GAME = gql(`
     mutation RemovePlayerFromGame($gameId: String!, $userId: String!) {
@@ -19,13 +21,14 @@ export type GamePagePlayerItemProps = {
             name?: string|null
         }|null
     },
-    onDelete: (id: string) => void,
-    onShowCharacterSheet: (id:string) => void
+    onDelete: (id: string) => void
 };
 
 export default function GamePagePlayerItem(props: GamePagePlayerItemProps) {
     const [mutationRemovePlayer] = useMutation(REMOVE_PLAYER_FROM_GAME);
     const [menuEl, setMenuEl] = useState<null|HTMLElement>(null);
+
+    const TabsContext = useContext(TabsManagerContext);
 
     const handleDelete = () => {
         mutationRemovePlayer({variables: {gameId: props.gameId, userId: props.character.user?.id as string}})
@@ -33,6 +36,18 @@ export default function GamePagePlayerItem(props: GamePagePlayerItemProps) {
                 props.onDelete(props.character.id as string);
                 setMenuEl(null);
             });
+    }
+
+    const handleShowCharacterSheet = () => {
+        if (TabsContext.openTab) {
+            TabsContext.openTab({
+                id: props.character.id,
+                type: "characterSheet",
+                name: props.character?.user?.name as string,
+                node: (<PlayerContainer inGame={false} editMode={true} characterSheetId={props.character.id as string} />)
+            })
+        }
+        setMenuEl(null);
     }
 
     return (
@@ -58,7 +73,7 @@ export default function GamePagePlayerItem(props: GamePagePlayerItemProps) {
                 }}
                 anchorEl={menuEl}
             >
-                <MenuItem divider onClick={()=>{props.onShowCharacterSheet(props.character.id as string); setMenuEl(null)}}>
+                <MenuItem divider onClick={handleShowCharacterSheet}>
                     <ListItemIcon>
                         <ContactPage/>
                     </ListItemIcon>

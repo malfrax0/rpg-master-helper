@@ -69,19 +69,27 @@ export type GameEvent = {
   content: Scalars['String']['output'];
   duration?: Maybe<Scalars['Int']['output']>;
   game?: Maybe<Game>;
-  gameId: Scalars['String']['output'];
+  gameId?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   participations?: Maybe<Array<GameEventParticipation>>;
   startAt?: Maybe<Scalars['timestamptz']['output']>;
   title: Scalars['String']['output'];
 };
 
+export type GameEventInput = {
+  content: Scalars['String']['input'];
+  duration: Scalars['Int']['input'];
+  gameId: Scalars['String']['input'];
+  startAt: Scalars['timestamptz']['input'];
+  title: Scalars['String']['input'];
+};
+
 export type GameEventParticipation = {
   __typename?: 'GameEventParticipation';
   id: Scalars['String']['output'];
   response: Scalars['String']['output'];
-  user: User;
-  userId: Scalars['String']['output'];
+  user?: Maybe<User>;
+  userId?: Maybe<Scalars['String']['output']>;
 };
 
 export enum GameEventResponse {
@@ -101,6 +109,12 @@ export type GameHistory = {
   userId?: Maybe<Scalars['String']['output']>;
 };
 
+export type GameHistoryInput = {
+  content: Scalars['String']['input'];
+  gameId: Scalars['String']['input'];
+  title: Scalars['String']['input'];
+};
+
 export type GameInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -110,9 +124,12 @@ export type GameInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   createCharacterSheetTemplate: CharacterSheetTemplate;
+  createEvent: GameEvent;
   createGame: Game;
+  createHistory: GameHistory;
   inviteUserToGame: CharacterSheet;
   login: AuthResponse;
+  participateToEvent: GameEvent;
   register: AuthResponse;
   removeUserFromGame: Scalars['Boolean']['output'];
   updateValueOfCharacterSheet: CharacterStat;
@@ -126,8 +143,18 @@ export type MutationCreateCharacterSheetTemplateArgs = {
 };
 
 
+export type MutationCreateEventArgs = {
+  event: GameEventInput;
+};
+
+
 export type MutationCreateGameArgs = {
   game: GameInput;
+};
+
+
+export type MutationCreateHistoryArgs = {
+  history: GameHistoryInput;
 };
 
 
@@ -140,6 +167,12 @@ export type MutationInviteUserToGameArgs = {
 export type MutationLoginArgs = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+
+export type MutationParticipateToEventArgs = {
+  gameEventId: Scalars['String']['input'];
+  response: GameEventResponse;
 };
 
 
@@ -326,9 +359,11 @@ export type ResolversTypes = ResolversObject<{
   CharacterStat: ResolverTypeWrapper<CharacterStat>;
   Game: ResolverTypeWrapper<Game>;
   GameEvent: ResolverTypeWrapper<GameEvent>;
+  GameEventInput: GameEventInput;
   GameEventParticipation: ResolverTypeWrapper<GameEventParticipation>;
   GameEventResponse: GameEventResponse;
   GameHistory: ResolverTypeWrapper<GameHistory>;
+  GameHistoryInput: GameHistoryInput;
   GameInput: GameInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
@@ -351,8 +386,10 @@ export type ResolversParentTypes = ResolversObject<{
   CharacterStat: CharacterStat;
   Game: Game;
   GameEvent: GameEvent;
+  GameEventInput: GameEventInput;
   GameEventParticipation: GameEventParticipation;
   GameHistory: GameHistory;
+  GameHistoryInput: GameHistoryInput;
   GameInput: GameInput;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
@@ -415,7 +452,7 @@ export type GameEventResolvers<ContextType = Context, ParentType extends Resolve
   content?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   duration?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   game?: Resolver<Maybe<ResolversTypes['Game']>, ParentType, ContextType>;
-  gameId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  gameId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   participations?: Resolver<Maybe<Array<ResolversTypes['GameEventParticipation']>>, ParentType, ContextType>;
   startAt?: Resolver<Maybe<ResolversTypes['timestamptz']>, ParentType, ContextType>;
@@ -426,8 +463,8 @@ export type GameEventResolvers<ContextType = Context, ParentType extends Resolve
 export type GameEventParticipationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['GameEventParticipation'] = ResolversParentTypes['GameEventParticipation']> = ResolversObject<{
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   response?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  userId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -448,9 +485,12 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   createCharacterSheetTemplate?: Resolver<ResolversTypes['CharacterSheetTemplate'], ParentType, ContextType, RequireFields<MutationCreateCharacterSheetTemplateArgs, 'description' | 'json' | 'name'>>;
+  createEvent?: Resolver<ResolversTypes['GameEvent'], ParentType, ContextType, RequireFields<MutationCreateEventArgs, 'event'>>;
   createGame?: Resolver<ResolversTypes['Game'], ParentType, ContextType, RequireFields<MutationCreateGameArgs, 'game'>>;
+  createHistory?: Resolver<ResolversTypes['GameHistory'], ParentType, ContextType, RequireFields<MutationCreateHistoryArgs, 'history'>>;
   inviteUserToGame?: Resolver<ResolversTypes['CharacterSheet'], ParentType, ContextType, RequireFields<MutationInviteUserToGameArgs, 'gameId' | 'userId'>>;
   login?: Resolver<ResolversTypes['AuthResponse'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
+  participateToEvent?: Resolver<ResolversTypes['GameEvent'], ParentType, ContextType, RequireFields<MutationParticipateToEventArgs, 'gameEventId' | 'response'>>;
   register?: Resolver<ResolversTypes['AuthResponse'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'email' | 'name' | 'password'>>;
   removeUserFromGame?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveUserFromGameArgs, 'gameId' | 'userId'>>;
   updateValueOfCharacterSheet?: Resolver<ResolversTypes['CharacterStat'], ParentType, ContextType, RequireFields<MutationUpdateValueOfCharacterSheetArgs, 'characterSheetId' | 'key' | 'value'>>;

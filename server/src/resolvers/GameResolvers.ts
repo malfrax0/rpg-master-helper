@@ -136,6 +136,65 @@ const GameResolver: Resolvers = {
             });
 
             return game;
+        },
+        async createEvent(_, args, context) {
+            const game = await context.prisma.game.findUnique({ where: {id: args.event.gameId} });
+            if (!game || game.adminId !== context.user.id) {
+                throw new GraphQLError(`Unable to find game with id ${args.event.gameId}`);
+            }
+
+            const gameEvent = await context.prisma.gameEvent.create({
+                data: {
+                    content: args.event.content,
+                    duration: args.event.duration,
+                    startAt: args.event.startAt,
+                    title: args.event.title,
+                    game: { connect: {id: args.event.gameId} }
+                }
+            });
+            return gameEvent;
+        },
+        async participateToEvent(_, args, context) {
+            const event = await context.prisma.gameEvent.findUnique({ where: {id: args.gameEventId}, include: {participations: {}}});
+            if (!event) {
+                throw new GraphQLError(`Unable to find game event with id ${args.gameEventId}.`);
+            }
+            // check right to participate
+
+            await context.prisma.gameEventParticipation.upsert({
+                create: {
+                    event: {connect: {id: event.id}},
+                    user: {connect: {id: context.user.id}},
+                    response: args.response
+                },
+                update: {
+                    response: args.response
+                },
+                where: {
+                    eventId_userId: {
+                        eventId: event.id,
+                        userId: context.user.id
+                    }
+                }
+            });
+
+            return event;
+        },
+        async createHistory(_, args, context) {
+            const game = await context.prisma.game.findUnique({ where: {id: args.history.gameId} });
+            if (!game || game.adminId !== context.user.id) {
+                throw new GraphQLError(`Unable to find game with id ${args.history.gameId}`);
+            }
+
+            const gameHistory = await context.prisma.gameHistory.create({
+                data: {
+                    title: args.history.title,
+                    content: args.history.content,
+                    game: {connect: {id: args.history.gameId}},
+                    user: {connect: {id: context.user.id}}
+                }
+            });
+            return gameHistory;
         }
     }
 }

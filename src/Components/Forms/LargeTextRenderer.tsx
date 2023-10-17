@@ -14,7 +14,12 @@ const LargeTextRenderer = (props: LargeTextRendererProps) => {
     const [value, setValue] = useState("");
 
     let inputInfo: {maxlength?: number} = {};
-    const { editMode } = useContext(PlayerContext);
+    const { editMode: editModeContext } = useContext(PlayerContext);
+
+    let editMode = editModeContext;
+    if (props.object.definedByList) {
+        editMode = false;
+    }
     
     inputInfo['maxlength'] = props.object.length
     

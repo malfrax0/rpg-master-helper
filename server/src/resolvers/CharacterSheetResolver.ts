@@ -6,7 +6,7 @@ import { getStatDefinitionFromKey } from "../services/CharacterStatService";
 const CharacterSheetResolver: Resolvers = {
     Query: {
         async characterSheet(_, args, context) {
-            const characterSheet = await context.prisma.characterSheet.findUnique({where: {id: args.characterSheetId}, include: {characterStats: {}, game: {}, user: {}}})
+            const characterSheet = await context.prisma.characterSheet.findUnique({where: {id: args.characterSheetId}, include: {characterStats: {}, game: { include: { rpgInfo: {}} }, user: {}}})
             if (!characterSheet) throw new GraphQLError(`Unable to find character sheet with id ${args.characterSheetId}`);
             if (context.user.id !== characterSheet.game.adminId && context.user.id !== characterSheet.userId) throw new GraphQLError(`You are not allowed to access this character sheet.`);
 

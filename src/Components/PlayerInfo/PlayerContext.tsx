@@ -5,7 +5,8 @@ export interface PlayerContextType {
     editMode: boolean,
     inGame: boolean,
     rpgInfo: RPGInfo,
-    player: any
+    playerId: string,
+    infos: any
 }
 
 const PlayerContext = React.createContext<PlayerContextType>({
@@ -19,9 +20,8 @@ const PlayerContext = React.createContext<PlayerContextType>({
 
         data: []
     },
-    player: {
-
-    }
+    playerId: "",
+    infos: {}
 });
 
 export default PlayerContext;

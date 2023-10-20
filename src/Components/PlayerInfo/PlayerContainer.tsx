@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {Grid} from '@mui/material'
 import RPGInfo, { FormObjectParameters as FOP } from '../../Data/RPGInfo'
 import ComponentCategory from './ComponentCategory'
-import PlayerContext from './PlayerContext'
+import PlayerContext from '../../Context/PlayerContext'
 import { gql } from '../../__generated__'
-import { useQuery } from '@apollo/client'
+import { useQuery, useSubscription } from '@apollo/client'
 import PageLoader from '../Utils/PageLoader'
 import PageError, { PageErrorSeverity } from '../Utils/PageError'
 
@@ -28,22 +28,46 @@ const GET_CHARACTER_SHEET = gql(`
             }
             user {
                 id
-                name
+                name 
             }
         }
     }
 `);
 
+const STAT_CHANGED = gql(`
+    subscription StatChanged($characterSheetId: String!) {
+        statChanged(characterSheetId: $characterSheetId) {
+            key,
+            value
+        }
+    }
+`)
+
 const PlayerContainer = (props: PlayerContainerProps) => {
 
-    const {loading, data, error} = useQuery(GET_CHARACTER_SHEET, { variables: {characterSheetId: props.characterSheetId}, fetchPolicy: "network-only"});
+    const {loading: loadingGet, data, error} = useQuery(GET_CHARACTER_SHEET, { variables: {characterSheetId: props.characterSheetId}, fetchPolicy: "network-only"});
+    const {loading: loadingSub} = useSubscription(STAT_CHANGED, {
+        onData: (options) => {
+            let values = {...infos};
+            values[options.data.data?.statChanged.key as string] = options.data.data?.statChanged.value;
+            console.log(values);
+            setInfos(values);
+        }
+    });
 
-    let values: {[k: string]: any} = {};
-    if  (data && data.characterSheet && data.characterSheet.characterStats) {
-        data.characterSheet.characterStats.forEach((stat)=>{
-            values[stat.key] = stat.value;
-        });
-    }
+    const loading = loadingGet || loadingSub;
+
+    const [infos, setInfos] = useState<any>({});
+
+    useEffect(() => {
+        let values: {[k: string]: any} = {};
+        if  (data && data.characterSheet && data.characterSheet.characterStats) {
+            data.characterSheet.characterStats.forEach((stat)=>{
+                values[stat.key] = stat.value;
+            });
+        }
+        setInfos(infos);
+    }, [data]);
 
     const rpgInfo = data?.characterSheet.game?.rpgInfo?.template ? (JSON.parse(data?.characterSheet.game?.rpgInfo?.template)) : {};
 
@@ -55,10 +79,8 @@ const PlayerContainer = (props: PlayerContainerProps) => {
         return (<PageError severity={PageErrorSeverity.ERROR} error={error ? error.message : ""} />)
     }
 
-    console.log(values);
-
     return (
-        <PlayerContext.Provider value={{inGame: props.inGame, editMode: props.editMode, rpgInfo: rpgInfo, infos: values, playerId: props.characterSheetId}}>
+        <PlayerContext.Provider value={{inGame: props.inGame, editMode: props.editMode, rpgInfo: rpgInfo, infos: infos, playerId: props.characterSheetId}}>
             <Grid container spacing={2}>
                 {
                     rpgInfo.data.map((category: FOP.Category) => {

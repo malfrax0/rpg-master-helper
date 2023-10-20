@@ -1,5 +1,5 @@
 import React from 'react';
-import RPGInfo from '../../Data/RPGInfo';
+import RPGInfo from '../Data/RPGInfo';
 
 export interface PlayerContextType {
     editMode: boolean,

@@ -2,6 +2,7 @@ import { GraphQLError } from "graphql";
 import { Resolvers } from "../generated/graphql"
 import { JsonObject } from "@prisma/client/runtime/library";
 import { getStatDefinitionFromKey } from "../services/CharacterStatService";
+import { withFilter } from 'graphql-subscriptions';
 
 const CharacterSheetResolver: Resolvers = {
     Query: {
@@ -67,7 +68,20 @@ const CharacterSheetResolver: Resolvers = {
                 }
             });
 
+            context.pubSub.publish("CHARACTER_SHEET_MODIFIED", stat);
+
             return stat;
+        }
+    },
+    Subscription: {
+        statChanged: {
+            /** @ts-ignore */
+            subscribe: withFilter(
+                (_, args, context) => context.pubSub.asyncIterator("CHARACTER_SHEET_MODIFIED"),
+                (payload, variables) => {
+                    return (payload.characterSheetId === variables.characterSheetId)
+                }
+            ),
         }
     }
 }

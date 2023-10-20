@@ -40,6 +40,7 @@ function TabsManager(props: TabsManagerProps, ref: ForwardedRef<TabsManagerRef>)
         setCurrentTabContent(
             [... currentTabContent, info]
         );
+        setCurrentTab(tabIndex);
         return tabIndex;
     }
     
@@ -49,15 +50,12 @@ function TabsManager(props: TabsManagerProps, ref: ForwardedRef<TabsManagerRef>)
         let contentsCopy = [...currentTabContent];
         contentsCopy.splice(index, 1);
         setCurrentTabContent(contentsCopy);
+        if (currentTab >= contentsCopy.length) {
+            setCurrentTab(Math.max(0, contentsCopy.length - 1));
+        }
     }
 
-    const handleExitTab = (ind: number) => {
-        let newTabs = [...currentTabContent];
-        newTabs.splice(ind, 1);
-        setCurrentTabContent(newTabs);
-    }
-
-    const bindedHandleExitTab = (ind: number) => () => handleExitTab(ind);
+    const bindedHandleExitTab = (ind: number) => () => closeTab(ind);
 
     const handleClickTab = (e: React.SyntheticEvent<Element, Event>, newValue: number) => {
         if ((e.target as any).nodeName.toLowerCase() !== "button") {
@@ -97,7 +95,7 @@ function TabsManager(props: TabsManagerProps, ref: ForwardedRef<TabsManagerRef>)
                         currentTabContent.map((tabInfo, ind) => {
                             const disabled = ind == currentTab ? "" : "hidden";
                             return (
-                                <div className={`${disabled} w-full`} key={`${tabInfo.type}-${tabInfo.name}-${tabInfo.id ?? 'main'}`}>
+                                <div className={`${disabled} w-full relative`} key={`${tabInfo.type}-${tabInfo.name}-${tabInfo.id ?? 'main'}`}>
                                     { tabInfo.node }
                                 </div>
                             )

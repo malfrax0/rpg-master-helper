@@ -5,6 +5,7 @@ import { gql } from "../../__generated__";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import GamePagePlayerItem from "./GamePagePlayerItem";
 import ModalStyleCard from "../../Components/Utils/ModalStyle";
+import { sxHidden } from "../../Components/Utils/Utils";
 
 const FIND_PLAYER_NOT_IN_GAME = gql(`
     query FindPlayerNotInGame($page: Pagination!, $filter: UserFilter) {
@@ -27,7 +28,8 @@ export type GamePagePlayersProps = {
     gameId: string,
     characters: {user?: {name: string|undefined}|undefined|null, id: string|undefined}[] | undefined | null,
     onInvite: (id: string) => void,
-    canInvite?: boolean
+    canInvite?: boolean,
+    isAdmin: boolean
 }
 
 export default function GamePagePlayers(props: GamePagePlayersProps) {
@@ -83,7 +85,7 @@ export default function GamePagePlayers(props: GamePagePlayersProps) {
                             (props.characters && props.characters.length > 0) ?
                             props.characters.map((character) => {
                                 return (
-                                    <GamePagePlayerItem gameId={props.gameId} onDelete={(id: string)=>props.onInvite(id)} key={character.id} character={character} />
+                                    <GamePagePlayerItem isAdmin={props.isAdmin} gameId={props.gameId} onDelete={(id: string)=>props.onInvite(id)} key={character.id} character={character} />
                                 )
                             }) : 
                             (<Typography>No players on your game.</Typography>)
@@ -91,7 +93,7 @@ export default function GamePagePlayers(props: GamePagePlayersProps) {
                     </List>
                 </CardContent>
                 <CardActions>
-                    <Button onClick={()=>setInvite(true)}>
+                    <Button onClick={()=>setInvite(true)} sx={{...sxHidden(!props.isAdmin)}}>
                         Invite a player!
                     </Button>
                 </CardActions>

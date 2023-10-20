@@ -2,7 +2,7 @@ import { CircularProgress, TextField } from "@mui/material";
 import { FormObjectParameters } from "../../Data/RPGInfo";
 import { FormBaseProps } from "./interfaces";
 import React, {useContext, useEffect, useState} from "react";
-import PlayerContext from "../PlayerInfo/PlayerContext";
+import PlayerContext from "../../Context/PlayerContext";
 
 export interface LargeTextRendererProps extends FormBaseProps {
     object: FormObjectParameters.LargeText

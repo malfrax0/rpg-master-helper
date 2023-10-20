@@ -2,7 +2,7 @@ import { CircularProgress, TextField } from "@mui/material";
 import { FormObjectParameters } from "../../Data/RPGInfo";
 import { FormBaseProps } from "./interfaces";
 import React, {useEffect, useState, useContext} from "react";
-import PlayerContext from "../PlayerInfo/PlayerContext";
+import PlayerContext from "../../Context/PlayerContext";
 
 export interface NumberRendererProps extends FormBaseProps {
     object: FormObjectParameters.Number

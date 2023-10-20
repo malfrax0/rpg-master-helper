@@ -20,6 +20,11 @@ export namespace FormObjectParameters {
         Horizontal = 2,
         Vertical = 3
     }
+
+    export interface GridInfo {
+        sm?: number | "auto",
+        md?: number | "auto" 
+    }
     
     export interface Base {
         name: string,
@@ -33,7 +38,10 @@ export namespace FormObjectParameters {
         default?: any,
         pinned?: boolean,
         definedByList?:boolean,
-        type: Type
+        definedByDefault?:boolean,
+        type: Type,
+        showLabel?: boolean,
+        grid?: GridInfo
     }
 
     export interface Number extends Base {

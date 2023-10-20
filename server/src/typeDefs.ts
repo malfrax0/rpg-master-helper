@@ -157,4 +157,8 @@ export const typeDefs = gql`
 
         createHistory(history: GameHistoryInput!): GameHistory!
     }
+
+    type Subscription {
+        statChanged(characterSheetId: String!): CharacterStat!
+    }
 `

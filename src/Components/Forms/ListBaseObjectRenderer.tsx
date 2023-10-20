@@ -3,7 +3,7 @@ import Slider from "@mui/material/Slider"
 import { FormObjectParameters as FOP } from "../../Data/RPGInfo";
 import { FormBaseProps } from "./interfaces";
 import React, {useContext, useEffect, useState} from "react";
-import PlayerContext from "../PlayerInfo/PlayerContext";
+import PlayerContext from "../../Context/PlayerContext";
 import ComponentCategory from "../PlayerInfo/ComponentCategory";
 import { grey } from "@mui/material/colors";
 
@@ -92,7 +92,7 @@ const ListBaseObjectRenderer = (props: ListBaseObjectRendererProps) => {
 
                                         const CategoryItem = (
                                             <Grid item xs={12} key={`${props.realKey}.${persoCategory.key}`}>
-                                                <ComponentCategory hideCard={true} category={persoCategory} prevKey={props.realKey} />
+                                                <ComponentCategory hideCard={true} category={persoCategory} prevKey={props.realKey} includeObject={props.object.list[currentIndex] || []} />
                                             </Grid>
                                         )
                                         currentIndex++;

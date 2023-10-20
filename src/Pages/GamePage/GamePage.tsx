@@ -5,6 +5,9 @@ import PageLoader from "../../Components/Utils/PageLoader";
 import { Edit, PlayCircle } from "@mui/icons-material";
 import GamePagePlayers from "./GamePagePlayers";
 import GamePageEventFeed from "./GamePageEventFeed";
+import { useContext } from "react";
+import UserContext from "../../Context/UserContext";
+import { sxHidden } from "../../Components/Utils/Utils";
 
 const GET_GAME = gql(`
     query GetGame($id: String!) {
@@ -38,10 +41,13 @@ export type GamePageProps = {
 
 export default function GamePage(props: GamePageProps) {
     const { loading, data, error, refetch } = useQuery(GET_GAME, { variables: { id: props.id } });
+    const userInfo = useContext(UserContext);
 
     if (loading) {
         return (<PageLoader />);
     }
+
+    const isAdmin = data?.game.adminId === userInfo.id;
 
     return (
         <Grid container spacing={2} alignItems="stretch">
@@ -63,7 +69,7 @@ export default function GamePage(props: GamePageProps) {
             <Grid item xs={8}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <GamePageEventFeed gameId={props.id} />
+                        <GamePageEventFeed gameId={props.id} isAdmin={isAdmin} />
                     </Grid>
                     <Grid item xs={12}>
                         History
@@ -72,7 +78,7 @@ export default function GamePage(props: GamePageProps) {
             </Grid>
             <Grid item xs={4}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sx={{...sxHidden(!isAdmin)}}>
                         <Card>
                             <CardHeader title="Actions" />
                             <CardActions>
@@ -87,6 +93,7 @@ export default function GamePage(props: GamePageProps) {
                             characters={(!data || !data.game || !data.game.characters) ? null : data.game.characters}
                             onInvite={(id: string) => refetch()}
                             canInvite={true}
+                            isAdmin={isAdmin}
                         />
                     </Grid>
                 </Grid>

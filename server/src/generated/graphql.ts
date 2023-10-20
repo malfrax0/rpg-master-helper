@@ -265,6 +265,16 @@ export type QueryUsersArgs = {
   page: Pagination;
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  statChanged: CharacterStat;
+};
+
+
+export type SubscriptionStatChangedArgs = {
+  characterSheetId: Scalars['String']['input'];
+};
+
 export type User = {
   __typename?: 'User';
   administratedGames?: Maybe<Array<Game>>;
@@ -372,6 +382,7 @@ export type ResolversTypes = ResolversObject<{
   Pagination: Pagination;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  Subscription: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<User>;
   UserFilter: UserFilter;
   timestamptz: ResolverTypeWrapper<Scalars['timestamptz']['output']>;
@@ -398,6 +409,7 @@ export type ResolversParentTypes = ResolversObject<{
   Pagination: Pagination;
   Query: {};
   String: Scalars['String']['output'];
+  Subscription: {};
   User: User;
   UserFilter: UserFilter;
   timestamptz: Scalars['timestamptz']['output'];
@@ -512,6 +524,10 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType, RequireFields<QueryUsersArgs, 'page'>>;
 }>;
 
+export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
+  statChanged?: SubscriptionResolver<ResolversTypes['CharacterStat'], "statChanged", ParentType, ContextType, RequireFields<SubscriptionStatChangedArgs, 'characterSheetId'>>;
+}>;
+
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   administratedGames?: Resolver<Maybe<Array<ResolversTypes['Game']>>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -537,6 +553,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   JSON?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   timestamptz?: GraphQLScalarType;
 }>;

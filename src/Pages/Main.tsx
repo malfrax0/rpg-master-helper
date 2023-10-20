@@ -2,11 +2,12 @@ import { AccountCircle, AddCircle, Casino, Close, SentimentSatisfied, SentimentV
 import { AppBar, Box, Container, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tab, Tabs } from "@mui/material";
 import { gql } from "../__generated__";
 import { useLazyQuery, useQuery } from "@apollo/client";
-import React, { MouseEvent, useEffect, useRef, useState } from "react";
+import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react";
 import MutationGame from "./MutationGame";
 import CthulhuRPGInfo from "../Data/Temp/CthulhuRPGInfo";
 import GamePage from "./GamePage/GamePage";
 import TabsManager, { TabsManagerRef } from "./TabsManager";
+import UserContext from "../Context/UserContext";
 
 const GET_MY_GAMES = gql(/* GraphQL */`
     query GetMyGames {
@@ -21,6 +22,8 @@ const GET_MY_GAMES = gql(/* GraphQL */`
 
 export default function Main() {
     const {loading: gamesLoading, data: gamesData, error: gamesError, refetch: refetchMyGames} = useQuery(GET_MY_GAMES);
+
+    const userInfo = useContext(UserContext);
 
     const [onGameEdition, setOnGameEdition] = useState<string | null>(null);
 
@@ -60,7 +63,7 @@ export default function Main() {
                                     <ListItemIcon>
                                         <AccountCircle />
                                     </ListItemIcon>
-                                    <ListItemText primary="My account" />
+                                    <ListItemText primary={userInfo.name} />
                                 </ListItemButton>
                             </ListItem>
                             <ListItem disablePadding>

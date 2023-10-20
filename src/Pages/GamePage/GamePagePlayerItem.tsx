@@ -5,6 +5,8 @@ import { gql } from "../../__generated__";
 import { useMutation } from "@apollo/client";
 import { TabsManagerContext } from "../TabsManager";
 import PlayerContainer from "../../Components/PlayerInfo/PlayerContainer";
+import { sxHidden } from "../../Components/Utils/Utils";
+import UserContext from "../../Context/UserContext";
 
 const REMOVE_PLAYER_FROM_GAME = gql(`
     mutation RemovePlayerFromGame($gameId: String!, $userId: String!) {
@@ -21,6 +23,7 @@ export type GamePagePlayerItemProps = {
             name?: string|null
         }|null
     },
+    isAdmin: boolean,
     onDelete: (id: string) => void
 };
 
@@ -29,6 +32,7 @@ export default function GamePagePlayerItem(props: GamePagePlayerItemProps) {
     const [menuEl, setMenuEl] = useState<null|HTMLElement>(null);
 
     const TabsContext = useContext(TabsManagerContext);
+    const userInfo = useContext(UserContext);
 
     const handleDelete = () => {
         mutationRemovePlayer({variables: {gameId: props.gameId, userId: props.character.user?.id as string}})
@@ -52,7 +56,7 @@ export default function GamePagePlayerItem(props: GamePagePlayerItemProps) {
 
     return (
         <ListItem secondaryAction={
-            <IconButton edge="end" onClick={(e)=>setMenuEl(e.currentTarget)}>
+            <IconButton edge="end" onClick={(e)=>setMenuEl(e.currentTarget)} sx={{...sxHidden(!(props.isAdmin || props.character.user?.id === userInfo.id), "inline-flex")}}>
                 <MoreHoriz />
             </IconButton>
         }>

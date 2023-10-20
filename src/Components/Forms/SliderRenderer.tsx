@@ -3,7 +3,7 @@ import Slider from "@mui/material/Slider"
 import { FormObjectParameters } from "../../Data/RPGInfo";
 import { FormBaseProps } from "./interfaces";
 import React, {useContext, useEffect, useState} from "react";
-import PlayerContext from "../PlayerInfo/PlayerContext";
+import PlayerContext from "../../Context/PlayerContext";
 
 export interface TextRendererProps extends FormBaseProps {
     object: FormObjectParameters.Slider

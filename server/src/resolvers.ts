@@ -69,5 +69,8 @@ export default {
         ...CharacterSheetTemplateResolver.Mutation,
         ...CharacterSheetResolver.Mutation,
         ...UserResolver.Mutation
+    },
+    Subscription: {
+        ...CharacterSheetResolver.Subscription
     }
 }

@@ -48,14 +48,18 @@ const PlayerContainer = (props: PlayerContainerProps) => {
     const {loading: loadingGet, data, error} = useQuery(GET_CHARACTER_SHEET, { variables: {characterSheetId: props.characterSheetId}, fetchPolicy: "network-only"});
     const {loading: loadingSub} = useSubscription(STAT_CHANGED, {
         onData: (options) => {
+            if (!options.data.data || !options.data.data.statChanged) return;
             let values = {...infos};
             values[options.data.data?.statChanged.key as string] = options.data.data?.statChanged.value;
             console.log(values);
             setInfos(values);
+        },
+        variables: {
+            characterSheetId: props.characterSheetId
         }
     });
 
-    const loading = loadingGet || loadingSub;
+    const loading = loadingGet;
 
     const [infos, setInfos] = useState<any>({});
 
@@ -66,7 +70,7 @@ const PlayerContainer = (props: PlayerContainerProps) => {
                 values[stat.key] = stat.value;
             });
         }
-        setInfos(infos);
+        setInfos(values);
     }, [data]);
 
     const rpgInfo = data?.characterSheet.game?.rpgInfo?.template ? (JSON.parse(data?.characterSheet.game?.rpgInfo?.template)) : {};

@@ -159,6 +159,6 @@ export const typeDefs = gql`
     }
 
     type Subscription {
-        statChanged(characterSheetId: String!): CharacterStat!
+        statChanged(characterSheetId: String!): CharacterStat
     }
 `

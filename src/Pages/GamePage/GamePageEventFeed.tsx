@@ -168,7 +168,7 @@ export default function GamePageEventFeed(props: GamePageEventFeedProps) {
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
-                                        <Grid container spacing={1}>
+                                        <Grid container spacing={1} alignItems="stretch">
                                             <ParticipationButton eventId={event.id} icon={<AddCircle/>} myVote={vote} response="PARTICIPATE" text="I will be here!" vote={votes.PARTICIPATE} />
                                             <ParticipationButton eventId={event.id} icon={<MoreHoriz/>} myVote={vote} response="MAYBE" text="Maybe..." vote={votes.MAYBE} />
                                             <ParticipationButton eventId={event.id} icon={<Cancel/>} myVote={vote} response="CANNOT" text="I can't..." vote={votes.CANNOT} />

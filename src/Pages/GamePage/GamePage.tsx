@@ -17,6 +17,7 @@ const GET_GAME = gql(`
             admin {
                 name
             },
+            isPlaying,
             characters {
                 user {
                     id,

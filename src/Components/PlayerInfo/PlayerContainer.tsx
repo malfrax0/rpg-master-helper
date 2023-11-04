@@ -46,7 +46,7 @@ const STAT_CHANGED = gql(`
 const PlayerContainer = (props: PlayerContainerProps) => {
 
     const {loading: loadingGet, data, error} = useQuery(GET_CHARACTER_SHEET, { variables: {characterSheetId: props.characterSheetId}, fetchPolicy: "network-only"});
-    const {loading: loadingSub} = useSubscription(STAT_CHANGED, {
+    useSubscription(STAT_CHANGED, {
         onData: (options) => {
             if (!options.data.data || !options.data.data.statChanged) return;
             let values = {...infos};

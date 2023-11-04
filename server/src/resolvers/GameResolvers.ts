@@ -131,7 +131,8 @@ const GameResolver: Resolvers = {
                     name: args.game.name,
                     description: args.game.description,
                     admin: { connect: {id: context.user.id}},
-                    rpgInfo: { connect: {id: characterSheetTemplate.id} }
+                    rpgInfo: { connect: {id: characterSheetTemplate.id} },
+                    isPlaying: true
                 }
             });
 

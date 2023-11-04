@@ -20,6 +20,7 @@ export const typeDefs = gql`
         description: String
         characters: [CharacterSheet!]
         rpgInfo: CharacterSheetTemplate
+        isPlaying: Boolean!
     }
 
     input GameInput {
@@ -144,6 +145,8 @@ export const typeDefs = gql`
         register(email: String!, password: String!, name: String!): AuthResponse!
         
         createGame(game: GameInput!): Game!
+        startGame(gameId: String!): Boolean!
+        endGame(gameId: String!): Boolean!
 
         inviteUserToGame(gameId: String!, userId: String!): CharacterSheet!
         removeUserFromGame(gameId: String!, userId: String!): Boolean!
@@ -160,5 +163,6 @@ export const typeDefs = gql`
 
     type Subscription {
         statChanged(characterSheetId: String!): CharacterStat
+        gameStateChanged(): Boolean!
     }
 `

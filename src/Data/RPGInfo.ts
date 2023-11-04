@@ -25,23 +25,28 @@ export namespace FormObjectParameters {
         sm?: number | "auto",
         md?: number | "auto" 
     }
-    
+
     export interface Base {
         name: string,
         key: string,
+        type: Type,
+        
+        required: boolean,
+        default?: any,
+
         shortDescription: string,
         longDescription?: string,
-        required: boolean,
-        modifyInGame: boolean,
-        calculated?: boolean,
-        inGameOnly?: boolean,
-        default?: any,
-        pinned?: boolean,
-        definedByList?:boolean,
-        definedByDefault?:boolean,
-        type: Type,
+
         showLabel?: boolean,
-        grid?: GridInfo
+        grid?: GridInfo,
+
+        modifyInGame: boolean,
+        inGameOnly?: boolean,
+        pinned?: boolean,
+        
+        definedByDefault?: boolean,
+
+        definedByList?: boolean,
     }
 
     export interface Number extends Base {

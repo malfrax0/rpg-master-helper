@@ -32,6 +32,7 @@ model Game {
   rpgInfoId String @db.ObjectId
   history GameHistory[]
   event GameEvent[]
+  isPlaying Boolean
 }
 
 model GameHistory {

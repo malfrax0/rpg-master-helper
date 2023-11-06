@@ -1,19 +1,11 @@
 import { CssBaseline, ThemeProvider } from '@mui/material';
-import { useQuery } from '@apollo/client';
 import { gql } from './__generated__';
-import Login from './Pages/Login';
-import PageLoader from './Components/Utils/PageLoader';
-import Main from './Pages/Main';
 import theme from './Theme';
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import UserContext from './Context/UserContext';
-
-const AUTH = gql(/* GraphQL */`
-  query Auth {
-    auth
-  }
-`)
+import { useAuth0 } from '@auth0/auth0-react';
+import Main from './Pages/Main';
+import { useEffect, useState } from 'react';
 
 const GET_ME = gql(/* GraphQL */`
   query Me {
@@ -25,31 +17,28 @@ const GET_ME = gql(/* GraphQL */`
 `)
 
 function App() {
-    const authData = useQuery(AUTH);
-    const meData = useQuery(GET_ME);
+    const { isAuthenticated, isLoading, loginWithRedirect, user, getAccessTokenSilently } = useAuth0();
+    const [accessToken, setAccessToken] = useState<string|undefined>(undefined)
 
-    let currentComponent = null;
-    if (authData.loading || meData.loading) {
-        currentComponent = (<PageLoader />)
+    if (!isAuthenticated && !isLoading) {
+        loginWithRedirect();
     }
-    else {
-        if (authData.data?.auth && meData.data) {
-            currentComponent = (
-                <UserContext.Provider value={meData.data.me}>
-                    <Main />
-                </UserContext.Provider>
-            );
+    useEffect(() => {
+        if (isAuthenticated) {
+            getAccessTokenSilently({detailedResponse: true}).then((data)=>setAccessToken(data.access_token));
         }
-    }
-
+    }, [isAuthenticated])
+    
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <ThemeProvider theme={theme}>
                 <CssBaseline />
                 {
-                    currentComponent
+                    isAuthenticated && accessToken && !isLoading &&
+                    (
+                        <Main />
+                    )
                 }
-                <Login open={!authData.loading && !authData.data?.auth} />
             </ThemeProvider>
         </LocalizationProvider>
     );

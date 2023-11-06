@@ -7,7 +7,7 @@ import MutationGame from "./MutationGame";
 import CthulhuRPGInfo from "../Data/Temp/CthulhuRPGInfo";
 import GamePage from "./GamePage/GamePage";
 import TabsManager, { TabsManagerRef } from "./TabsManager";
-import UserContext from "../Context/UserContext";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const GET_MY_GAMES = gql(/* GraphQL */`
     query GetMyGames {
@@ -23,9 +23,9 @@ const GET_MY_GAMES = gql(/* GraphQL */`
 export default function Main() {
     const {loading: gamesLoading, data: gamesData, error: gamesError, refetch: refetchMyGames} = useQuery(GET_MY_GAMES);
 
-    const userInfo = useContext(UserContext);
-
     const [onGameEdition, setOnGameEdition] = useState<string | null>(null);
+
+    const { logout, user } = useAuth0();
 
     const borderWidth = 240;
     const loading = gamesLoading;
@@ -63,7 +63,7 @@ export default function Main() {
                                     <ListItemIcon>
                                         <AccountCircle />
                                     </ListItemIcon>
-                                    <ListItemText primary={userInfo.name} />
+                                    <ListItemText primary={user?.name} />
                                 </ListItemButton>
                             </ListItem>
                             <ListItem disablePadding>

@@ -9,31 +9,58 @@ import { PrismaClient } from "@prisma/client";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import { auth } from 'express-oauth2-jwt-bearer';
 
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { GraphQLError } from "graphql";
 import { useServer } from 'graphql-ws/lib/use/ws';
-import { PubSub } from "graphql-subscriptions";
+import { loadFiles } from '@graphql-tools/load-files';
 
 import { Context } from "./context";
 import resolvers from "./resolvers";
-import { typeDefs } from "./typeDefs";
 
-const getUserFromRequest = (headers: IncomingHttpHeaders) => {
-    if (!headers || !headers.authorization) return { error: "No authentification sent to the server.", user: null };
+import axios from "axios";
 
-    const auth = headers.authorization.split(" ");
-    const bearer = auth[0];
-    const token = auth[1];
+require("dotenv").config();
 
-    if (bearer !== "Bearer") return { error: "Authentification need to use Bearer.", user: null };
+const jwtCheck = auth({
+    audience: process.env.AUDIENCE,
+    issuerBaseURL: process.env.ISSUER_BASE_URL,
+    tokenSigningAlg: process.env.TOKEN_SIGNING_ALG
+})
 
-    try {
-        return { error: null, user: jwt.verify(token, process.env.JWTSECRET) };
+const getUserFromRequest = async (headers: IncomingHttpHeaders, prisma: PrismaClient) => {
+    if (headers && headers.authorization) {
+        const slipt = headers.authorization.split(" ");
+        if (slipt[0] === "Bearer") {
+            const user = jwt.decode(slipt[1], { json: true}) as jwt.JwtPayload;
+            if (user) {
+                
+                if (user.sub) {
+                    console.log(user);
+                    const userDb = await prisma.user.findUnique({ where: {id: user.sub as string}})
+                    if (!userDb) {
+                        const rep = await axios.get(`https://{yourDomain}/userinfo`, {
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: headers.authorization
+                            }
+                        });
+                        console.log(rep);
+                        // prisma.user.create({
+                        //     data: {
+                        //         id: user.sub,
+                        //         email: user.
+                        //     }
+                        // })
+                    }
+                    return {error: null, user: user as jwt.JwtPayload};
+                }
+            }
+            return {error: "Unable to decode jwt token.", user: {}}
+        }
     }
-    catch {
-        return { error: "Token is invalid.", user: null };
-    }
+    return {error: "No authorization sent.", user: {}}
 }
 
 const runServer = async () => {
@@ -42,9 +69,11 @@ const runServer = async () => {
     const httpServer = createServer(app);
     const prisma = new PrismaClient();
 
+    const typeDefs = await loadFiles('src/document/**/*.graphql');
+
     const wsServer = new WebSocketServer({
         server: httpServer,
-        path: '/subscriptions'
+        path: '/api/subscriptions'
     });
 
     const schema = makeExecutableSchema({ typeDefs, resolvers });
@@ -74,17 +103,17 @@ const runServer = async () => {
     await server.start();
     console.log("Server started.")
 
+    app.use(cors())
+
+    app.use(jwtCheck);
+
     app.use(
-        '/',
+        '/api',
         cors<cors.CorsRequest>(),
         express.json(),
         expressMiddleware(server, {
             context: async ({ req }) => {
-                const { error, user } = getUserFromRequest(req.headers);
-
-                if (req.body.query.match("login") || req.body.query.match("register") || req.body.query.match("auth")) {
-                    return { prisma, req, user }
-                }
+                const { error, user } = await getUserFromRequest(req.headers, prisma);
 
                 if (error !== null) {
                     throw new GraphQLError(error);

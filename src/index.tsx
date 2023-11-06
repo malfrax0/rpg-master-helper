@@ -8,53 +8,27 @@ import { setContext } from '@apollo/client/link/context';
 import { createClient } from 'graphql-ws';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { getMainDefinition } from '@apollo/client/utilities';
+import { Auth0Provider } from '@auth0/auth0-react';
+import AuthenticationProvider from './Context/Authentication.Auth0';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-const httpLink = createHttpLink({
-  uri: 'http://localhost:4000'
-});
-
-const wsLink = new GraphQLWsLink(createClient({
-  url: 'ws://localhost:4000/subscriptions'
-}));
-
-const splitLink = split(
-  ({ query }) => {
-    const definition = getMainDefinition(query);
-
-    return (
-      definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
-    );
-  },
-  wsLink,
-  httpLink
-)
-
-const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem("token");
-
-  return {
-    headers: {
-      ...headers,
-      Authorization: token ? `Bearer ${token}` : "",
-    }
-  }
-})
-
-const client = new ApolloClient({
-  link: authLink.concat(splitLink),
-  cache: new InMemoryCache()
-});
-
 root.render(
   <React.StrictMode>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
+    <Auth0Provider
+      clientId='a84V8ZZDddkEFlK4X5qxJQZ8wbMGynIJ'
+      domain='dev-f2j2i7hzv41g8lge.us.auth0.com'
+      authorizationParams={{
+        redirect_uri: window.location.origin,
+        audience: "https://api.roleplayinghelper.com"
+      }}
+    >
+      <AuthenticationProvider>
+        <App />
+      </AuthenticationProvider>
+    </Auth0Provider>
   </React.StrictMode>
 );
 

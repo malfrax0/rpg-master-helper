@@ -7,8 +7,8 @@ import { useState, useRef, useContext } from "react";
 import ModalStyleCard from "../../Components/Utils/ModalStyle";
 import { DateCalendar, TimePicker } from "@mui/x-date-pickers";
 import { useMutation } from "@apollo/client";
-import UserContext from "../../Context/UserContext";
 import { GameEventResponse } from "../../__generated__/graphql";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const GET_EVENTS = gql(`
     query GetEvents($page: Pagination!, $gameId: String!) {
@@ -59,7 +59,8 @@ export default function GamePageEventFeed(props: GamePageEventFeedProps) {
 
     const [formData, setFormData] = useState({title: "", content: "", startAt: dayjs(), from: dayjs(), to: dayjs().add(4, 'h')});
 
-    const userInfo = useContext(UserContext);
+    const { user } = useAuth0();
+    const { sub: userId } = user || {};
 
     const handleFormData = (key: string, data: string|Dayjs|null) => {
         setFormData(
@@ -149,7 +150,7 @@ export default function GamePageEventFeed(props: GamePageEventFeedProps) {
 
                         let myParticipation: string|undefined = undefined;
                         event.participations?.forEach((participation) => {
-                            if (participation.user?.id === userInfo.id) {
+                            if (participation.user?.id === userId) {
                                 myParticipation = participation.response;
                             }
                             votes[participation.response]++;

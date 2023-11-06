@@ -6,8 +6,8 @@ import { Edit, PlayCircle } from "@mui/icons-material";
 import GamePagePlayers from "./GamePagePlayers";
 import GamePageEventFeed from "./GamePageEventFeed";
 import { useContext } from "react";
-import UserContext from "../../Context/UserContext";
 import { sxHidden } from "../../Components/Utils/Utils";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const GET_GAME = gql(`
     query GetGame($id: String!) {
@@ -42,13 +42,15 @@ export type GamePageProps = {
 
 export default function GamePage(props: GamePageProps) {
     const { loading, data, error, refetch } = useQuery(GET_GAME, { variables: { id: props.id } });
-    const userInfo = useContext(UserContext);
+
+    const { user } = useAuth0();
+    const { sub: userId } = user || {}
 
     if (loading) {
         return (<PageLoader />);
     }
 
-    const isAdmin = data?.game.adminId === userInfo.id;
+    const isAdmin = data?.game.adminId === userId;
 
     return (
         <Grid container spacing={2} alignItems="stretch">

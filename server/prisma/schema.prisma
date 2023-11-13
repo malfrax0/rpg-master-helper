@@ -6,12 +6,12 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id String @id @map("_id") @db.ObjectId
+  id String @id @map("_id") 
   email String @unique
   name String
   password String
@@ -22,35 +22,35 @@ model User {
 }
 
 model Game {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(uuid()) @map("_id") 
   admin User @relation(fields: [adminId], references: [id])
-  adminId String @db.ObjectId
+  adminId String 
   name String
   description String
   characters CharacterSheet[]
   rpgInfo CharacterSheetTemplate @relation(fields: [rpgInfoId], references: [id])
-  rpgInfoId String @db.ObjectId
+  rpgInfoId String 
   history GameHistory[]
   event GameEvent[]
   isPlaying Boolean
 }
 
 model GameHistory {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(uuid()) @map("_id") 
   user User @relation(fields: [userId], references: [id])
-  userId String @db.ObjectId
+  userId String 
   game Game @relation(fields: [gameId], references: [id])
-  gameId String @db.ObjectId
+  gameId String 
   title String
   content String
 }
 
 model GameEvent {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(uuid()) @map("_id") 
   title String
   content String
   game Game @relation(fields: [gameId], references: [id])
-  gameId String @db.ObjectId
+  gameId String 
   startAt DateTime
   duration Int
   participations GameEventParticipation[]
@@ -63,31 +63,31 @@ enum GameEventResponse {
 }
 
 model GameEventParticipation {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(uuid()) @map("_id") 
   event GameEvent @relation(fields: [eventId], references: [id])
-  eventId String @db.ObjectId
+  eventId String 
   user User @relation(fields: [userId], references: [id])
-  userId String @db.ObjectId
+  userId String 
   response GameEventResponse @default(MAYBE)
 
   @@unique([eventId, userId])
 }
 
 model CharacterSheet {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(uuid()) @map("_id") 
   game Game @relation(fields: [gameId], references: [id])
-  gameId String @db.ObjectId
+  gameId String 
   user User @relation(fields: [userId], references: [id])
-  userId String @db.ObjectId
+  userId String 
   characterStats CharacterStat[]
 
   @@unique([gameId, userId])
 }
 
 model CharacterStat {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(uuid()) @map("_id") 
   characterSheet CharacterSheet @relation(fields: [characterSheetId], references: [id])
-  characterSheetId String @db.ObjectId
+  characterSheetId String 
   key String
   value String
 
@@ -95,7 +95,7 @@ model CharacterStat {
 }
 
 model CharacterSheetTemplate {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(uuid()) @map("_id") 
   template Json
   name String
   description String

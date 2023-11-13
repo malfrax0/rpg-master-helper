@@ -18,32 +18,21 @@ services:
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 
   db:
-    image: mongo:latest
+    container_name: postgres_container
+    image: postgres
     restart: unless-stopped
-    volumes:
-      - mongodb-data:/data/db
-      - mongodb-log:/var/log/mongodb
-      - ./setup/init.sh:/docker-entrypoint-initdb.d/init.sh:ro
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT:-mongodb}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-mongodb}
-      MONGO_INITDB_ROOT_DATABASE: ${MONGO_ROOT_DB:-mongodb}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      PG_DATA: /data/postgres
     networks:
-      - services
-
-    # Uncomment to change startup options
-    # environment:
-    #  MONGO_INITDB_ROOT_USERNAME: root
-    #  MONGO_INITDB_ROOT_PASSWORD: example
-    #  MONGO_INITDB_DATABASE: your-database-here
-
-    # Add "forwardPorts": ["27017"] to **devcontainer.json** to forward MongoDB locally.
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
+      - postgres
+    volumes:
+      - postgres:/data/postgres
+    
+networks:
+  postgres:
+    driver: bridge
 
 volumes:
-  mongodb-data:
-  mongodb-log:
-
-networks:
-  services:
-    name: ${MONGO_NETWORK:-mongodb.network}
+  postgres:

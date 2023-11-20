@@ -5,9 +5,10 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
+
     volumes:
       - ../..:/workspaces:cached
-
+      
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
 
@@ -18,21 +19,17 @@ services:
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 
   db:
-    container_name: postgres_container
-    image: postgres
+    image: postgres:latest
     restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      PG_DATA: /data/postgres
-    networks:
-      - postgres
     volumes:
-      - postgres:/data/postgres
-    
-networks:
-  postgres:
-    driver: bridge
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+
+    # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
 
 volumes:
-  postgres:
+  postgres-data:

@@ -14,44 +14,6 @@ const defaultResolver: Resolvers = {
         }
     },
     Mutation: {
-        async login(_, args, context, info) {
-            const { email, password } = args;
-
-            const user = await context.prisma.user.findUnique({ where: { email }});
-
-            if (!user) {
-                throw new GraphQLError("Unable to connect this user");
-            }
-            else {
-                const valid = await bcrypt.compare(password, user.password);
-
-                if (!valid) {
-                    throw new GraphQLError("Unable to connect this user");
-                }
-
-                return {
-                    token: jwt.sign(user, process.env.JWTSECRET),
-                    user
-                };
-            }
-        },
-        async register(_, args, context, info) {
-            const {email, password, name} = args;
-
-            let user = await context.prisma.user.findUnique({where: { email }});
-
-            if (user) {
-                throw new GraphQLError("User already exist");
-            }
-            else {
-                user = await context.prisma.user.create({ data: {email, password: await bcrypt.hash(password, 10), name} });
-
-                return {
-                    token: jwt.sign(user, process.env.JWTSECRET),
-                    user
-                }
-            }
-        }
     },
 }
 

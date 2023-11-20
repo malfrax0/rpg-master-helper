@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import {Grid, Box, Card, CardContent, CardHeader} from '@mui/material';
+import { useContext } from 'react';
+import {Grid, Card, CardContent, CardHeader} from '@mui/material';
 import { FormObjectParameters as FOP } from '../../Data/RPGInfo';
 import FormComponentRenderer from '../Forms/FormComponentRenderer';
 import PlayerContext from '../../Context/PlayerContext';
